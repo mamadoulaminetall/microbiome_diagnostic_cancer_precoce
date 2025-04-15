@@ -73,7 +73,7 @@ Intégration de QIIME 2 pour le FASTQ
 👨‍💻 Auteur
 
 Mamadou Lamine TALL
-📧 Contact
+📧 Contact : mamadoulaminetallgithub@gmail.com
 🔗 GitHub: @mamadoulaminetall
 📄 Licence
 
@@ -81,12 +81,3 @@ Ce projet est open-source sous licence MIT.
 
 
 ---
-
-Tu peux maintenant :
-1. Coller ce contenu dans ton `README.md`.
-2. Faire :
-
-```bash
-git add README.md
-git commit -m "Ajout du README complet du projet"
-git push origin main
