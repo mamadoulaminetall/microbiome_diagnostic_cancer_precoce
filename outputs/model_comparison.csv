@@ -1,0 +1,5 @@
+Model,Accuracy,Precision,Recall,F1 Score,AUC
+RandomForest,0.0,0.0,0.0,0.0,
+XGBoost,0.0,0.0,0.0,0.0,
+SVM,0.0,0.0,0.0,0.0,
+LogisticRegression,0.0,0.0,0.0,0.0,
