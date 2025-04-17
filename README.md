@@ -114,7 +114,7 @@ Mamadou Lamine TALL
 Ce projet est open-source sous licence MIT.
 💡 Comment contribuer ?
 
-    Forkez ce projet
+    Forcez ce projet
 
     Créez votre branche de fonctionnalité (git checkout -b feature/feature-name)
 
