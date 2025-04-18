@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 import subprocess
+import traceback  # Import nécessaire pour afficher les erreurs détaillées
 
 # Configuration de la page
 st.set_page_config(page_title="Diagnostic Prédictif du Cancer basé sur le Microbiome", layout="wide")
@@ -67,6 +68,7 @@ if uploaded_file is not None:
             subprocess.run(["python", "scripts/preprocess_otu.py", uploaded_path], check=True)
             st.success("✅ Prétraitement terminé. Lancement de l'analyse...")
 
+            # Lancer le modèle
             subprocess.run(["python", "scripts/run_model.py"], check=True)
             st.success("🎯 Analyse terminée. Résultats :")
 
@@ -145,8 +147,12 @@ Une AUC de 1.00 et une précision de 100% indiquent que le modèle discrimine pa
             """)
 
         except subprocess.CalledProcessError as e:
-            st.error(f"❌ Erreur lors du prétraitement ou de l'analyse : {e}")
+            st.error("❌ Erreur lors du prétraitement ou de l'analyse :")
+            st.code(f"Erreur du sous-processus : {e}")
+            st.code(traceback.format_exc())  # Affichage de la stack trace complète de l'erreur
         except Exception as e:
-            st.error(f"❌ Une erreur est survenue : {e}")
+            st.error("❌ Une erreur inattendue est survenue :")
+            st.code(str(e))
+            st.code(traceback.format_exc())  # Affichage de la stack trace complète pour toute autre exception
 else:
     st.info("📥 En attente du fichier OTU pour lancer l’analyse.")
