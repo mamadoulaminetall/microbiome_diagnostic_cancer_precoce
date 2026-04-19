@@ -6,8 +6,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 from matplotlib.colors import TwoSlopeNorm
-import matplotlib.colors as mcolors
 
 from utils.scoring import load_signatures, CANCER_LABELS, CANCER_COLORS
 
@@ -154,8 +154,8 @@ with tab3:
         for spine in ax.spines.values():
             spine.set_edgecolor("#334155")
 
-    enriched_patch = mcolors.Patch(color="#ef4444", label="Enrichi (cancer)")
-    depleted_patch = mcolors.Patch(color="#10b981", label="Déplété (cancer)")
+    enriched_patch = mpatches.Patch(color="#ef4444", label="Enrichi (cancer)")
+    depleted_patch = mpatches.Patch(color="#10b981", label="Déplété (cancer)")
     fig2.legend(handles=[enriched_patch, depleted_patch], loc="lower center",
                 facecolor="#1e293b", labelcolor="#f1f5f9", ncol=2, fontsize=9,
                 bbox_to_anchor=(0.5, -0.05))

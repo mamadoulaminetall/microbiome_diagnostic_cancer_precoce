@@ -60,6 +60,20 @@ with st.sidebar:
     st.markdown("**Format attendu**")
     st.caption("CSV · lignes = échantillons · colonnes = taxons · valeurs = abondances relatives [0–1]")
     st.code("Fusobacterium_nucleatum,Faecalibacterium_prausnitzii,...\n0.72,0.08,...", language="text")
+    st.markdown("---")
+    st.markdown("**Fichier de test**")
+    try:
+        with open("data/test_otu_patients.csv", "rb") as f:
+            st.download_button(
+                "📥 CSV test (6 patients)",
+                data=f.read(),
+                file_name="test_otu_patients.csv",
+                mime="text/csv",
+                use_container_width=True,
+                help="2 CRC · 1 PDAC · 1 GC · 2 contrôles",
+            )
+    except FileNotFoundError:
+        pass
 
 # ── Upload / Demo ──────────────────────────────────────────────────────────────
 col_up, col_demo = st.columns([3, 1])
@@ -224,9 +238,103 @@ if df is not None:
             sig_df.columns = ["Taxon", "Direction attendue", "log₂FC", "Observé", "Référence", "Concordant"]
             st.dataframe(sig_df, use_container_width=True, hide_index=True)
 
+    # ── Clinical interpretation for the physician ──────────────────────────────
+    st.markdown("---")
+    st.markdown("### Interprétation clinique")
+
+    CLINICAL_NOTES = {
+        "CRC": {
+            "enriched_key": ["Fusobacterium nucleatum", "Peptostreptococcus stomatis", "Parvimonas micra"],
+            "depleted_key": ["Faecalibacterium prausnitzii", "Roseburia intestinalis"],
+            "note": (
+                "**Colorectal (CRC)** — *F. nucleatum* est le biomarqueur CRC le plus répliqué "
+                "(>15 études, OR≈4). Sa présence élevée est associée à l'invasion de la muqueuse colique "
+                "et à un phénotype moléculaire MSI-H. Un score CRC élevé justifie une coloscopie de contrôle "
+                "et un dosage du calprotectine fécale."
+            ),
+        },
+        "GC": {
+            "enriched_key": ["Helicobacter pylori", "Fusobacterium nucleatum"],
+            "depleted_key": ["Faecalibacterium prausnitzii", "Akkermansia muciniphila"],
+            "note": (
+                "**Gastrique (GC)** — *H. pylori* reste le principal facteur étiologique (classé IARC groupe 1). "
+                "Une dysbiose gastrique combinée à *F. nucleatum* enrichi suggère une atrophie progressive. "
+                "Recommander une gastroscopie avec biopsies selon les critères de Sydney et un test CLO."
+            ),
+        },
+        "PDAC": {
+            "enriched_key": ["Fusobacterium nucleatum", "Bacteroides fragilis"],
+            "depleted_key": ["Faecalibacterium prausnitzii", "Bifidobacterium longum"],
+            "note": (
+                "**Pancréatique (PDAC)** — AUC méta la plus élevée (0.853). "
+                "*F. nucleatum* et *B. fragilis* entérotoxinogène sont enrichis dès les stades I–II. "
+                "En cas de score élevé avec antécédents familiaux ou syndrome BRCA2, orienter vers une "
+                "IRM pancréatique et un dosage CA 19-9 / CEA."
+            ),
+        },
+        "HCC": {
+            "enriched_key": ["Bacteroides fragilis", "Clostridium hathewayi"],
+            "depleted_key": ["Akkermansia muciniphila", "Faecalibacterium prausnitzii"],
+            "note": (
+                "**Hépatocarcinome (HCC)** — La déplétion d'*A. muciniphila* altère la barrière intestinale "
+                "et favorise la translocation bactérienne vers le foie (axe intestin-foie). "
+                "Un score HCC élevé chez un patient cirrhotique ou porteur VHB/VHC renforce l'indication "
+                "d'une surveillance échographique et alpha-fœtoprotéine tous les 6 mois."
+            ),
+        },
+        "LC": {
+            "enriched_key": ["Veillonella parvula", "Streptococcus salivarius"],
+            "depleted_key": ["Akkermansia muciniphila", "Faecalibacterium prausnitzii"],
+            "note": (
+                "**Pulmonaire (LC)** — L'axe microbiome intestin-poumon est médialisé par les acides gras "
+                "à chaîne courte (AGCC). *V. parvula* produit du propionate favorisant l'inflammation "
+                "pulmonaire chronique. Un score LC élevé chez un fumeur ou exposé à l'amiante justifie "
+                "un scanner thoracique basse dose (dépistage NLST/NELSON)."
+            ),
+        },
+    }
+
+    cancer_order_disp = ["CRC", "GC", "PDAC", "HCC", "LC"]
+    for ct in cancer_order_disp:
+        if ct not in scores:
+            continue
+        info = scores[ct]
+        note_data = CLINICAL_NOTES.get(ct, {})
+        risk_color = info["risk_color"]
+        with st.expander(f"{info['label']} — Risque **{info['risk']}** · Score {info['score']:.3f}", expanded=info["risk"] in ["Élevé", "Très élevé"]):
+            st.markdown(f"""
+            <div style="background:#0f172a;border-left:4px solid {info['color']};padding:14px 18px;border-radius:6px;margin-bottom:10px;">
+            {note_data.get('note', '')}
+            </div>
+            """, unsafe_allow_html=True)
+
+            col_a, col_b = st.columns(2)
+            with col_a:
+                st.markdown("**Biomarqueurs-clés enrichis (cancer) :**")
+                for t in note_data.get("enriched_key", []):
+                    st.markdown(f"- 🔴 *{t}*")
+            with col_b:
+                st.markdown("**Biomarqueurs-clés déplétés (cancer) :**")
+                for t in note_data.get("depleted_key", []):
+                    st.markdown(f"- 🟢 *{t}*")
+
+            n_conc = sum(1 for s in info["matched_signatures"] if s["concordant"])
+            st.caption(f"Signatures concordantes : {n_conc}/{info['n_matched']} · AUC méta-analyse : {info['auc_meta']:.3f}")
+
     # ── Export button ──────────────────────────────────────────────────────────
     st.markdown("---")
     st.markdown("### Export des résultats")
+
+    # Download test CSV
+    with open("data/test_otu_patients.csv", "rb") as f:
+        st.download_button(
+            "📥 Télécharger un fichier test (6 patients)",
+            data=f.read(),
+            file_name="test_otu_patients.csv",
+            mime="text/csv",
+            help="CSV avec 2 patients CRC, 1 PDAC, 1 GC et 2 contrôles sains",
+        )
+
     result_rows = []
     for ct, info in scores.items():
         result_rows.append({
