@@ -41,20 +41,22 @@ col1, col2, col3 = st.columns(3)
 with col1:
     patient_id = st.text_input("ID Patient", value="PAT-2026-001")
 with col2:
-    sample_id = st.text_input("ID Échantillon", value="SAMP-16S-001")
+    sample_id = st.text_input("ID Échantillon", value="SAMP-001")
 with col3:
     clinician = st.text_input("Clinicien référent", value="Dr. —")
 
-# ── Step 2 — OTU data ─────────────────────────────────────────────────────────
-st.markdown("### Étape 2 — Données OTU")
+# ── Step 2 — Données microbiome ─────────────────────────────────────────────────
+st.markdown("### Étape 2 — Données microbiome")
 col_up, col_demo = st.columns([3, 1])
 with col_up:
-    uploaded = st.file_uploader("Fichier OTU (CSV)", type=["csv", "xlsx"], key="report_upload")
+    uploaded = st.file_uploader("Fichier d'abondances — 16S ou shotgun (CSV)", type=["csv", "xlsx"], key="report_upload")
 with col_demo:
     st.markdown("<br>", unsafe_allow_html=True)
     demo_cancer = st.selectbox("Cancer démo", list(CANCER_LABELS.keys()),
                                format_func=lambda k: CANCER_LABELS[k])
     use_demo = st.button("Données démo", use_container_width=True)
+
+seq_method = st.selectbox("Méthode de séquençage", options=["16S rRNA", "Métagénomique shotgun"])
 
 df = None
 if uploaded:
@@ -122,6 +124,7 @@ if df is not None:
                 sample_id=sample_id,
                 n_taxa=len(df_otu.columns),
                 n_matched=len(col_to_taxon),
+                seq_method=seq_method,
             )
         st.download_button(
             label="⬇️ Télécharger le rapport PDF",

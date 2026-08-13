@@ -3,7 +3,7 @@
 > **Plateforme de détection précoce du cancer par analyse du microbiome intestinal**  
 > Basée sur une méta-analyse validée · 18 études · 2 587 patients · 5 types de cancer
 
-[![bioRxiv](https://img.shields.io/badge/bioRxiv-BIORXIV%2F2026%2F719461-b31b1b)](https://www.biorxiv.org)
+[![bioRxiv](https://img.shields.io/badge/bioRxiv-10.64898%2F2026.04.19.719461-b31b1b)](https://doi.org/10.64898/2026.04.19.719461)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.32+-red)](https://streamlit.io)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
@@ -20,17 +20,17 @@ Cette plateforme Streamlit permet l'analyse de données de microbiome intestinal
 |------|--------|-----------|-----|---------|
 | CRC  | Colorectal | **0.785** [0.750–0.819] | 30.6% | 5 |
 | GC   | Gastrique | **0.834** [0.781–0.887] | 56.6% | 3 |
-| PDAC | Pancréatique | **0.853** [0.812–0.894] | 18.4% | 4 |
-| HCC  | Hépatocarcinome | **0.809** [0.762–0.856] | 42.1% | 3 |
-| LC   | Pulmonaire | **0.780** [0.738–0.822] | 25.8% | 3 |
+| PDAC | Pancréatique | **0.853** [0.785–0.921] | 60.8% | 3 |
+| HCC  | Hépatocarcinome | **0.809** [0.747–0.871] | 70.3% | 3 |
+| LC   | Pulmonaire | **0.780** [0.738–0.822] | 25.0% | 4 |
 
 ---
 
 ## Modules
 
 ### 🔬 Analyse OTU
-- Import fichier CSV/XLSX (OTU table · abondances relatives)
-- Correspondance automatique avec les 74 signatures validées
+- Import fichier CSV/XLSX (table d'abondances relatives) — **16S rRNA ou métagénomique shotgun**
+- Correspondance automatique avec les 74 signatures validées (matching robuste aux nomenclatures 16S et shotgun/MetaPhlAn, y compris lignées complètes avec préfixes de rang `k__`/`s__`)
 - Score de risque calibré par l'AUC poolée de la méta-analyse
 - Indice de dysbiose global
 - Tableaux de signatures concordantes par cancer
@@ -69,17 +69,19 @@ L'application s'ouvre sur `http://localhost:8501`
 
 ## Format des données d'entrée
 
-Le fichier OTU doit être un **CSV ou XLSX** avec :
+Le fichier doit être un **CSV ou XLSX** avec :
 - **Une ligne par échantillon**
 - **Une colonne par taxon** (nommée avec le nom du micro-organisme)
 - **Valeurs = abondances relatives** [0–1]
+
+Compatible **16S rRNA** (noms de type `Genre_espece`) et **métagénomique shotgun** (noms MetaPhlAn-style avec lignée complète, ex. `k__Bacteria|...|s__Genre_espece`) — le matching normalise les deux formats vers le même référentiel de 74 signatures.
 
 ```csv
 Fusobacterium_nucleatum,Faecalibacterium_prausnitzii,Akkermansia_muciniphila,...
 0.72,0.08,0.03,...
 ```
 
-Un bouton **"Données démo"** est disponible dans chaque module pour tester sans données réelles.
+Un bouton **"Données démo"** est disponible dans chaque module pour tester sans données réelles. Un sélecteur **"Méthode de séquençage"** permet de renseigner 16S ou shotgun pour la traçabilité du rapport (informatif — n'affecte pas le calcul).
 
 ---
 
@@ -129,7 +131,7 @@ microbiome_diagnostic_cancer_precoce/
 
 > **TALL ML** (2026). Gut Microbiome as a Diagnostic Biomarker for Early Cancer Detection:  
 > A Systematic Review and Meta-Analysis of 18 Studies across Five Cancer Types.  
-> *bioRxiv* BIORXIV/2026/719461. MedFlow AI, Aix-Marseille Universite.
+> *bioRxiv* 2026.04.19.719461, doi.org/10.64898/2026.04.19.719461. MedFlow AI, Aix-Marseille Universite.
 
 ---
 

@@ -60,7 +60,7 @@ def _risk_table(scores: dict, st: dict) -> Table:
             Paragraph(info["label"], st["body"]),
             Paragraph(f"{info['score']:.3f}", st["center"]),
             Paragraph(f"{info['auc_meta']:.3f}", st["center"]),
-            Paragraph(f"<font color='#{risk_color.hexval()[2:]}''><b>{info['risk']}</b></font>", st["center"]),
+            Paragraph(f"<font color='#{risk_color.hexval()[2:]}'><b>{info['risk']}</b></font>", st["center"]),
         ])
     ts = TableStyle([
         ("BACKGROUND",    (0, 0), (-1, 0), DARK_BLUE),
@@ -111,6 +111,7 @@ def generate_pdf(
     sample_id: str,
     n_taxa: int,
     n_matched: int,
+    seq_method: str = "Non renseignée",
 ) -> bytes:
     buf = io.BytesIO()
     doc = SimpleDocTemplate(
@@ -126,6 +127,7 @@ def generate_pdf(
     story.append(Paragraph("Diagnostic Prédictif par Analyse du Microbiome Intestinal", st["sub"]))
     story.append(Paragraph(
         f"Patient : <b>{patient_id}</b> &nbsp;|&nbsp; Échantillon : <b>{sample_id}</b> &nbsp;|&nbsp; "
+        f"Séquençage : <b>{seq_method}</b> &nbsp;|&nbsp; "
         f"Date : <b>{datetime.today().strftime('%d/%m/%Y')}</b>",
         st["sub"],
     ))

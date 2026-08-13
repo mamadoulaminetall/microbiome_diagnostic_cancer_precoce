@@ -3,6 +3,7 @@ Signature-based dysbiosis scoring engine.
 Matches OTU columns to validated meta-analysis signatures and computes
 a concordance score per cancer type, calibrated with pooled AUC.
 """
+import re
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -52,12 +53,31 @@ def load_rob() -> pd.DataFrame:
     return pd.read_csv(DATA / "risk_of_bias.csv")
 
 
+_RANK_PREFIX = re.compile(r"\b[dkpcofgst]__")
+
+
 def _normalize_name(name: str) -> str:
-    return name.lower().replace("_", " ").replace("-", " ").strip()
+    """
+    Normalize a taxon/column name for lexical matching, agnostic to the
+    sequencing method that produced it (16S/QIIME2 style "Genus_species",
+    or shotgun/MetaPhlAn style "k__Bacteria|...|g__Genus|s__Genus_species").
+    """
+    n = name.strip()
+    if "|" in n:
+        # Full lineage string (typical of shotgun metagenomics output):
+        # keep only the most specific (last) rank.
+        n = n.split("|")[-1]
+    n = _RANK_PREFIX.sub("", n)
+    return n.lower().replace("_", " ").replace("-", " ").strip()
 
 
 def match_taxa(otu_columns: list[str], signatures: pd.DataFrame) -> dict[str, str]:
-    """Return {otu_col: taxon} mapping for matched signatures."""
+    """
+    Return {otu_col: taxon} mapping for matched signatures.
+    Works the same whether otu_columns come from 16S/OTU tables or from
+    shotgun metagenomics abundance tables — matching is on normalized
+    taxon names, not on the sequencing technology.
+    """
     matches = {}
     sig_taxa = signatures["taxon"].unique()
     for col in otu_columns:

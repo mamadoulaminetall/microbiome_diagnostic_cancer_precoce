@@ -43,7 +43,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown("## 🔬 Analyse des Signatures Microbiennes")
-st.markdown("Importez un fichier OTU/16S (CSV) avec une colonne par taxon, une ligne par échantillon.")
+st.markdown("Importez une table d'abondances microbiennes (CSV) avec une colonne par taxon, une ligne par échantillon.")
 
 sigs = load_signatures()
 ests = load_estimates()
@@ -51,6 +51,12 @@ ests = load_estimates()
 # ── Sidebar options ────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("### Options d'analyse")
+    seq_method = st.selectbox(
+        "Méthode de séquençage",
+        options=["16S rRNA", "Métagénomique shotgun"],
+        help="Informatif — le matching des signatures fonctionne pour les deux méthodes. "
+             "Renseigné pour la traçabilité du rapport.",
+    )
     demo_cancer = st.selectbox(
         "Cancer dominant (démo)",
         options=list(CANCER_LABELS.keys()),
@@ -78,7 +84,7 @@ with st.sidebar:
 # ── Upload / Demo ──────────────────────────────────────────────────────────────
 col_up, col_demo = st.columns([3, 1])
 with col_up:
-    uploaded = st.file_uploader("Fichier OTU (CSV)", type=["csv", "xlsx"])
+    uploaded = st.file_uploader("Fichier d'abondances microbiennes — 16S ou shotgun (CSV)", type=["csv", "xlsx"])
 with col_demo:
     st.markdown("<br>", unsafe_allow_html=True)
     use_demo = st.button("🧪 Données démo", use_container_width=True, type="secondary")
@@ -113,7 +119,16 @@ if df is not None:
         st.warning("Aucun taxon reconnu dans les colonnes. Vérifiez les noms (ex: `Fusobacterium_nucleatum`).")
         st.stop()
 
-    st.markdown(f"**{n_matched} taxons reconnus** sur {n_taxa} colonnes")
+    st.markdown(f"**{n_matched} taxons reconnus** sur {n_taxa} colonnes · méthode déclarée : *{seq_method}*")
+    unmatched_cols = [c for c in df_otu.columns if c not in col_to_taxon]
+    if unmatched_cols:
+        with st.expander(f"⚠️ {len(unmatched_cols)} colonne(s) non reconnue(s) — vérifier la nomenclature"):
+            st.caption(
+                "Ces noms de colonnes ne correspondent à aucune des 74 signatures de référence. "
+                "Cause fréquente : nomenclature taxonomique différente entre pipelines "
+                "(ex. souche/sous-espèce non répertoriée, ID de séquence brute non renommé)."
+            )
+            st.code(", ".join(unmatched_cols), language="text")
 
     # Analyse first sample
     sample = df_otu.iloc[0]
@@ -343,6 +358,7 @@ if df is not None:
             "Risque": info["risk"],
             "N_signatures": info["n_matched"],
             "AUC_meta": info["auc_meta"],
+            "Methode_sequencage": seq_method,
         })
     result_df = pd.DataFrame(result_rows)
     st.download_button(
