@@ -13,6 +13,8 @@ from reportlab.platypus import (
 )
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
 
+from utils.scoring import load_studies, load_estimates
+
 DARK_BLUE   = colors.HexColor("#1e3a5f")
 MID_BLUE    = colors.HexColor("#2563eb")
 LIGHT_GRAY  = colors.HexColor("#f8fafc")
@@ -148,10 +150,13 @@ def generate_pdf(
     ]))
 
     # Risk scores
+    stud = load_studies()
+    n_studies_ref = len(stud)
+    n_patients_ref = f"{int(stud['n_total'].sum()):,}".replace(",", " ")
     story.append(Paragraph("Scores de Risque par Type de Cancer", st["h1"]))
     story.append(Paragraph(
         f"Scores calculés par concordance avec {n_matched} signatures microbiennes validées "
-        "(méta-analyse · 18 études · 2 587 patients), calibrés par l'AUC poolée.",
+        f"(méta-analyse · {n_studies_ref} études · {n_patients_ref} patients), calibrés par l'AUC poolée.",
         st["body"],
     ))
     story.append(_risk_table(scores, st))
@@ -179,15 +184,18 @@ def generate_pdf(
 
     # Scientific basis
     story.append(Paragraph("Base Scientifique", st["h1"]))
+    est_ref = load_estimates()
+    auc_lo, auc_hi = est_ref["auc_pooled"].min(), est_ref["auc_pooled"].max()
     story.append(Paragraph(
         "Ce rapport est généré à partir des données de référence issues de la méta-analyse "
         "\"Gut Microbiome as a Diagnostic Biomarker for Early Cancer Detection\" "
-        "(TALL ML, MedFlow AI, bioRxiv BIORXIV/2026/719461, avril 2026).",
+        "(TALL ML, MedFlow AI, bioRxiv 2026.04.19.719461, avril 2026).",
         st["body"],
     ))
     story.append(Paragraph(
-        "La méta-analyse a inclus 18 études publiées (2 587 patients, 5 types de cancer) et "
-        "identifié 74 signatures microbiennes validées avec des AUC poolées de 0.780–0.853.",
+        f"La méta-analyse a inclus {n_studies_ref} études publiées ({n_patients_ref} patients, "
+        f"5 types de cancer) et identifié 74 signatures microbiennes validées avec des AUC "
+        f"poolées de {auc_lo:.3f}–{auc_hi:.3f}.",
         st["body"],
     ))
 

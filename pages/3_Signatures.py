@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.colors import TwoSlopeNorm
 
-from utils.scoring import load_signatures, CANCER_LABELS, CANCER_COLORS
+from utils.scoring import load_signatures, load_studies, CANCER_LABELS, CANCER_COLORS
 
 st.set_page_config(page_title="Signatures · MedFlow AI", page_icon="🧫", layout="wide")
 
@@ -21,9 +21,10 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 sigs = load_signatures()
+stud = load_studies()
 
 st.markdown("## 🧫 Signatures Microbiennes Validées")
-st.markdown(f"**{len(sigs)} signatures** issues de 18 études publiées · méta-analyse DerSimonian-Laird")
+st.markdown(f"**{len(sigs)} signatures** issues de {len(stud)} études publiées · méta-analyse DerSimonian-Laird")
 
 # ── Filters ────────────────────────────────────────────────────────────────────
 col_f1, col_f2, col_f3 = st.columns(3)

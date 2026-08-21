@@ -31,13 +31,13 @@ stud = load_studies()
 rob  = load_rob()
 
 st.markdown("## 📊 Méta-Analyse — Tableau de Bord")
-st.caption("Gut Microbiome as a Diagnostic Biomarker for Early Cancer Detection · bioRxiv BIORXIV/2026/719461")
+st.caption("Gut Microbiome as a Diagnostic Biomarker for Early Cancer Detection · bioRxiv 2026.04.19.719461")
 
 # ── KPIs ───────────────────────────────────────────────────────────────────────
 k1, k2, k3, k4, k5, k6 = st.columns(6)
 kpis = [
-    ("18", "Études incluses"),
-    ("2 587", "Patients total"),
+    (str(len(stud)), "Études incluses"),
+    (f"{int(stud['n_total'].sum()):,}".replace(",", " "), "Patients total"),
     ("5", "Types de cancer"),
     ("74", "Signatures"),
     (f"{est['auc_pooled'].mean():.3f}", "AUC moyenne"),
@@ -117,7 +117,7 @@ with tab1:
     st.dataframe(est_disp, use_container_width=True, hide_index=True)
 
 with tab2:
-    st.markdown("### Registre des 18 études incluses")
+    st.markdown(f"### Registre des {len(stud)} études incluses")
 
     filter_cancer = st.multiselect(
         "Filtrer par cancer",

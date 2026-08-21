@@ -86,38 +86,44 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("""
     **Publication**
-    BIORXIV/2026/719461
+    bioRxiv 2026.04.19.719461
     *TALL ML, MedFlow AI, 2026*
     """)
     st.caption("v2.0 · Avril 2026")
 
+# ── Stats (chargées avant le hero pour que le texte du hero soit dynamique) ────
+est = load_estimates()
+studies = load_studies()
+
+n_studies = len(studies)
+n_patients = int(studies["n_total"].sum())
+n_patients_str = f"{n_patients:,}".replace(",", " ")
+auc_min = est["auc_pooled"].min()
+auc_max_row = est.loc[est["auc_pooled"].idxmax()]
+
 # ── Hero ───────────────────────────────────────────────────────────────────────
-st.markdown("""
+st.markdown(f"""
 <div class="hero">
   <div class="hero-title">🧬 MedFlow AI — Diagnostic Microbiome</div>
   <div class="hero-sub">
     Détection précoce du cancer par analyse des signatures microbiennes intestinales<br>
-    Méta-analyse validée · 18 études · 2 587 patients · 5 types de cancer
+    Méta-analyse validée · {n_studies} études · {n_patients_str} patients · 5 types de cancer
   </div>
   <div class="hero-badges">
     <span class="badge-green">✓ 74 signatures validées</span>
-    <span class="badge-blue">AUC 0.780–0.853</span>
+    <span class="badge-blue">AUC {auc_min:.3f}–{auc_max_row['auc_pooled']:.3f}</span>
     <span class="badge-purple">bioRxiv 2026</span>
   </div>
 </div>
 """, unsafe_allow_html=True)
 
-# ── Stats ──────────────────────────────────────────────────────────────────────
-est = load_estimates()
-studies = load_studies()
-
 c1, c2, c3, c4, c5 = st.columns(5)
 stats = [
-    ("18", "Études incluses"),
-    ("2 587", "Patients"),
+    (str(n_studies), "Études incluses"),
+    (n_patients_str, "Patients"),
     ("5", "Types de cancer"),
     ("74", "Signatures validées"),
-    ("0.853", "AUC max (PDAC)"),
+    (f"{auc_max_row['auc_pooled']:.3f}", f"AUC max ({auc_max_row['cancer_type']})"),
 ]
 for col, (val, lab) in zip([c1, c2, c3, c4, c5], stats):
     with col:
@@ -229,7 +235,7 @@ with col_b3:
 st.markdown("""
 <div class="footer">
   MedFlow AI © 2026 · Dr. Mamadou Lamine TALL, PhD · Bioinformatique & IA médicale<br>
-  <span class="biorxiv-badge">bioRxiv BIORXIV/2026/719461</span><br><br>
+  <span class="biorxiv-badge">bioRxiv 2026.04.19.719461</span><br><br>
   ⚠️ Usage exploratoire uniquement — non destiné au diagnostic clinique direct.
 </div>
 """, unsafe_allow_html=True)
