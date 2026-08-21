@@ -1,0 +1,9 @@
+services:
+  microbiome-cancer:
+    build: .
+    container_name: medflow-microbiome-cancer
+    ports:
+      - "8501:8501"
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data:ro
