@@ -1,7 +1,7 @@
 # 🧬 Microbiome Cancer Diagnostic — MedFlow AI
 
 > **Plateforme de détection précoce du cancer par analyse du microbiome intestinal**  
-> Basée sur une méta-analyse validée · 18 études · 2 587 patients · 5 types de cancer
+> Basée sur une méta-analyse validée · 14 études · 2 106 patients · 5 types de cancer
 
 [![bioRxiv](https://img.shields.io/badge/bioRxiv-10.64898%2F2026.04.19.719461-b31b1b)](https://doi.org/10.64898/2026.04.19.719461)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://python.org)
@@ -19,10 +19,10 @@ Cette plateforme Streamlit permet l'analyse de données de microbiome intestinal
 | Code | Cancer | AUC poolée | I² | k études |
 |------|--------|-----------|-----|---------|
 | CRC  | Colorectal | **0.785** [0.750–0.819] | 30.6% | 5 |
-| GC   | Gastrique | **0.834** [0.781–0.887] | 56.6% | 3 |
+| GC   | Gastrique | **0.852** [0.793–0.911] | 54.2% | 2 |
 | PDAC | Pancréatique | **0.853** [0.785–0.921] | 60.8% | 3 |
-| HCC  | Hépatocarcinome | **0.809** [0.747–0.871] | 70.3% | 3 |
-| LC   | Pulmonaire | **0.780** [0.738–0.822] | 25.0% | 4 |
+| HCC  | Hépatocarcinome | **0.833** [0.775–0.892] | 61.8% | 2 |
+| LC   | Pulmonaire | **0.791** [0.723–0.858] | 47.4% | 2 |
 
 ---
 
@@ -37,7 +37,7 @@ Cette plateforme Streamlit permet l'analyse de données de microbiome intestinal
 
 ### 📊 Méta-Analyse
 - Forest plots interactifs par type de cancer
-- Tableau des 18 études (filtre par cancer, AUC, année)
+- Tableau des 14 études (filtre par cancer, AUC, année)
 - Évaluation du risque de biais (Newcastle-Ottawa Scale)
 - Analyse de l'hétérogénéité I² et τ²
 
@@ -101,7 +101,7 @@ microbiome_diagnostic_cancer_precoce/
 ├── data/
 │   ├── meta_analytic_estimates.csv   # AUC poolées, I², τ²
 │   ├── microbial_signatures.csv      # 74 signatures validées
-│   ├── studies_registry.csv          # 18 études incluses
+│   ├── studies_registry.csv          # 14 études incluses
 │   └── risk_of_bias.csv              # Scores NOS
 ├── .streamlit/
 │   └── config.toml           # Thème dark
@@ -130,7 +130,7 @@ microbiome_diagnostic_cancer_precoce/
 ## Publication de référence
 
 > **TALL ML** (2026). Gut Microbiome as a Diagnostic Biomarker for Early Cancer Detection:  
-> A Systematic Review and Meta-Analysis of 18 Studies across Five Cancer Types.  
+> A Systematic Review and Meta-Analysis of 14 Studies across Five Cancer Types.  
 > *bioRxiv* 2026.04.19.719461, doi.org/10.64898/2026.04.19.719461. MedFlow AI, Aix-Marseille Universite.
 
 ---
